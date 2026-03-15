@@ -124,6 +124,8 @@ app.get("/badge.js", (req, res) => {
   document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
 })();`);
 });
-
+app.get('/', (req, res) => {
+  res.redirect('/dashboard');
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`TrustBadge running on http://localhost:${PORT}`));
