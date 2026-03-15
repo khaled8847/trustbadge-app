@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustBadge Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #2d6a4f;
+    --green-light: #d8f3dc;
+    --green-mid: #74c69d;
+    --bg: #f6f8f4;
+    --card: #ffffff;
+    --border: #e4ebe6;
+    --text: #1a2e22;
+    --muted: #6b7c72;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Instrument Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .topbar {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-icon {
+    width: 30px; height: 30px;
+    background: var(--green);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  .plan-badge {
+    font-size: 12px;
+    background: var(--green-light);
+    color: var(--green);
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-weight: 500;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    max-width: 1100px;
+    margin: 32px auto;
+    padding: 0 24px;
+  }
+
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .panel-title {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+
+  .field { margin-bottom: 20px; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+
+  select, input[type="color"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+  }
+
+  select:focus { border-color: var(--green-mid); }
+
+  input[type="color"] {
+    height: 42px;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+
+  .badge-toggles { display: flex; flex-direction: column; gap: 8px; }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+
+  .toggle-row:hover { border-color: var(--green-mid); }
+  .toggle-row.on { border-color: var(--green); background: var(--green-light); }
+
+  .toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .toggle-switch {
+    width: 36px; height: 20px;
+    border-radius: 100px;
+    background: #ccc;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .toggle-row.on .toggle-switch { background: var(--green); }
+
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: white;
+    top: 2px; left: 2px;
+    transition: left 0.2s;
+  }
+
+  .toggle-row.on .toggle-switch::after { left: 18px; }
+
+  .save-btn {
+    width: 100%;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 13px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s;
+  }
+
+  .save-btn:hover { opacity: 0.88; }
+
+  .saved-msg {
+    display: none;
+    text-align: center;
+    font-size: 13px;
+    color: var(--green);
+    margin-top: 10px;
+    font-weight: 500;
+  }
+
+  .preview-section { flex: 1; }
+
+  .preview-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
+  }
+
+  .store-mockup {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .mockup-bar {
+    background: #f0f0f0;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dot-r { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; }
+  .dot-y { width: 10px; height: 10px; border-radius: 50%; background: #ffbd2e; }
+  .dot-g { width: 10px; height: 10px; border-radius: 50%; background: #28c840; }
+
+  .mockup-url {
+    flex: 1;
+    background: white;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: #888;
+    margin: 0 8px;
+  }
+
+  .mockup-body { padding: 24px; }
+
+  .product-img {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, #e8f4ea, #d0ecd6);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  .product-title {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .product-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+
+  .atc-btn {
+    width: 100%;
+    background: #111;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: default;
+    margin-bottom: 4px;
+  }
+
+  .badges-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .badge-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 13px;
+    border-radius: 8px;
+    background: #f8f8f8;
+    border: 1px solid #e5e5e5;
+    flex: 1;
+    min-width: 110px;
+    transition: all 0.2s;
+  }
+
+  .badge-item .bi { font-size: 18px; }
+  .badge-item .bt { font-size: 11px; font-weight: 600; color: #111; line-height: 1.3; }
+  .badge-item .bs { font-size: 10px; color: #999; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--green);
+  }
+
+  .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">🛡</div>
+    TrustBadge
+  </div>
+  <div class="plan-badge">Pro Plan — $4.99/mo</div>
+</div>
+
+<div style="max-width:1100px;margin:32px auto;padding:0 24px;">
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-views">2,841</div>
+      <div class="stat-lbl">Badge impressions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">+6.3%</div>
+      <div class="stat-lbl">Conversion lift</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">Active</div>
+      <div class="stat-lbl">Status</div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <div>
+    <div class="panel">
+      <div class="panel-title">Customize badges</div>
+
+      <div class="field">
+        <label>Style</label>
+        <select id="styleSelect" onchange="updatePreview()">
+          <option value="minimal">Minimal (gray cards)</option>
+          <option value="bold">Bold (colored cards)</option>
+          <option value="pill">Pill (rounded)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Accent color</label>
+        <input type="color" id="colorPicker" value="#2d6a4f" oninput="updatePreview()">
+      </div>
+
+      <div class="field">
+        <label>Active badges</label>
+        <div class="badge-toggles" id="toggles">
+          <div class="toggle-row on" data-key="secure" onclick="toggleBadge(this)">
+            <span class="toggle-label"><span>🔒</span> Secure Checkout</span>
+            <div class="toggle-switch"></div>
+          </div>
+          <div class="toggle-row on" data-key="returns" onclick="toggleBadge(this)">
+            <span class="toggle-label"><span>↩️</span> Free Returns</span>
+            <div class="toggle-switch"></div>
+          </div>
+          <div class="toggle-row on" data-key="shipping" onclick="toggleBadge(this)">
+            <span class="toggle-label"><span>🚚</span> Fast Shipping</span>
+            <div class="toggle-switch"></div>
+          </div>
+          <div class="toggle-row on" data-key="support" onclick="toggleBadge(this)">
+            <span class="toggle-label"><span>💬</span> 24/7 Support</span>
+            <div class="toggle-switch"></div>
+          </div>
+          <div class="toggle-row" data-key="genuine" onclick="toggleBadge(this)">
+            <span class="toggle-label"><span>✅</span> 100% Genuine</span>
+            <div class="toggle-switch"></div>
+          </div>
+          <div class="toggle-row" data-key="payment" onclick="toggleBadge(this)">
+            <span class="toggle-label"><span>💳</span> Safe Payment</span>
+            <div class="toggle-switch"></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="save-btn" onclick="saveSettings()">Save & Apply to Store</button>
+      <div class="saved-msg" id="savedMsg">✓ Settings saved and live on your store!</div>
+    </div>
+  </div>
+
+  <div>
+    <div class="preview-label">Live preview</div>
+    <div class="store-mockup">
+      <div class="mockup-bar">
+        <div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div>
+        <div class="mockup-url">mystore.myshopify.com/products/example</div>
+      </div>
+      <div class="mockup-body">
+        <div class="product-img">👟</div>
+        <div class="product-title">Classic Runner Pro</div>
+        <div class="product-price">$89.00</div>
+        <button class="atc-btn">Add to cart</button>
+        <div class="badges-preview" id="badgesPreview"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const BADGES = {
+  secure:   { icon: '🔒', text: 'Secure Checkout', sub: 'SSL Encrypted' },
+  returns:  { icon: '↩️', text: 'Free Returns',    sub: '30-Day Policy' },
+  shipping: { icon: '🚚', text: 'Fast Shipping',    sub: 'Tracked Delivery' },
+  support:  { icon: '💬', text: '24/7 Support',     sub: 'Always Here' },
+  genuine:  { icon: '✅', text: '100% Genuine',     sub: 'Verified Products' },
+  payment:  { icon: '💳', text: 'Safe Payment',     sub: 'Multiple Options' }
+};
+
+function toggleBadge(el) {
+  el.classList.toggle('on');
+  updatePreview();
+}
+
+function getActiveBadges() {
+  return [...document.querySelectorAll('.toggle-row.on')].map(el => el.dataset.key);
+}
+
+function updatePreview() {
+  const color = document.getElementById('colorPicker').value;
+  const style = document.getElementById('styleSelect').value;
+  const active = getActiveBadges();
+  const preview = document.getElementById('badgesPreview');
+
+  preview.innerHTML = '';
+
+  active.forEach(key => {
+    const b = BADGES[key];
+    const el = document.createElement('div');
+    el.className = 'badge-item';
+
+    if (style === 'bold') {
+      el.style.background = color + '18';
+      el.style.borderColor = color + '55';
+    } else if (style === 'pill') {
+      el.style.borderRadius = '100px';
+    }
+
+    el.innerHTML = `<span class="bi">${b.icon}</span><div><div class="bt" style="${style==='bold'?'color:'+color:''}">${b.text}</div><div class="bs">${b.sub}</div></div>`;
+    preview.appendChild(el);
+  });
+}
+
+function saveSettings() {
+  const shop = new URLSearchParams(window.location.search).get('shop') || 'demo';
+  const settings = {
+    enabled: true,
+    badges: getActiveBadges(),
+    style: document.getElementById('styleSelect').value,
+    color: document.getElementById('colorPicker').value
+  };
+
+  fetch('/api/settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ shop, settings })
+  }).then(() => {
+    const msg = document.getElementById('savedMsg');
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display = 'none', 3000);
+  });
+}
+
+// Animate impression counter
+let count = 2841;
+setInterval(() => {
+  count += Math.floor(Math.random() * 3);
+  document.getElementById('stat-views').textContent = count.toLocaleString();
+}, 3000);
+
+updatePreview();
+</script>
+</body>
+</html>
