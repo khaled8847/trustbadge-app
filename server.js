@@ -8,7 +8,7 @@ const path = require("path");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname)));
 app.use(cookieSession({ name: "session", keys: [process.env.SESSION_SECRET || "trustbadge-secret-key"], maxAge: 24 * 60 * 60 * 1000 }));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -49,9 +49,8 @@ app.get("/auth/callback", async (req, res) => {
 // App Dashboard
 app.get("/app", (req, res) => {
   const shop = req.query.shop || req.session.shop;
-  if (!req.session.accessToken) return res.redirect(`/auth?shop=${shop}`);
   req.session.shop = shop;
-  res.render("dashboard", { shop, apiKey: SHOPIFY_API_KEY });
+  res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
 // Save settings and inject script tag
@@ -125,7 +124,7 @@ app.get("/badge.js", (req, res) => {
 })();`);
 });
 app.get('/', (req, res) => {
-  res.redirect('/dashboard');
+  res.redirect('/app');
 });
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`TrustBadge running on http://localhost:${PORT}`));
